@@ -76,13 +76,17 @@ def lambda_handler(event, context):
         if not username:
             username = claims.get('username')
 
+        preferred_username = claims.get('preferred_username')
+
         # Store the connection
-        table.put_item(
-            Item={
-                'connectionId': connection_id,
-                'username': username
-            }
-        )
+        item = {
+            'connectionId': connection_id,
+            'username': username
+        }
+        if preferred_username:
+            item['preferredUsername'] = preferred_username
+
+        table.put_item(Item=item)
 
         print(f"Successfully authenticated and stored connection for user {username}")
         return {'statusCode': 200, 'body': 'Connected.'}
